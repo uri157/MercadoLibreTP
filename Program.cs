@@ -9,21 +9,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 try
 {
-    // Configuración de CORS para permitir todos los orígenes temporalmente (solo para desarrollo)
+    // Configuración de CORS para permitir el origen del servidor local
     builder.Services.AddCors(options =>
     {
-        options.AddPolicy("AllowAll", policy =>
+        options.AddPolicy("AllowHttpServerOrigin", policy =>
         {
-            policy.AllowAnyOrigin()    // Permitir todos los orígenes (temporalmente para desarrollo)
-                  .AllowAnyMethod()    // Permitir todos los métodos HTTP
-                  .AllowAnyHeader();   // Permitir todos los encabezados
+            policy.WithOrigins("http://127.0.0.1:8080") // Permite el origen del servidor frontend
+                  .AllowAnyMethod()                    // Permite todos los métodos HTTP
+                  .AllowAnyHeader();                   // Permite todos los encabezados
         });
     });
 
     // Agregamos los controladores
     builder.Services.AddControllers();
 
-    // Swagger para la documentación de la API
+    // Configuración de Swagger para la documentación de la API
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(c =>
     {
@@ -59,7 +59,8 @@ try
     // Configuración del contexto de base de datos
     builder.Services.AddSqlServer<DbContext>(builder.Configuration.GetConnectionString("cnMercadoLibre"));
 
-    // Inyección de dependencias para los servicios
+    // Inyección de dependencias para los servicios específicos de la aplicación
+    builder.Services.AddScoped<IAccountService, AccountDbService>();
     builder.Services.AddScoped<ICardService, CardDbService>();
     builder.Services.AddScoped<ICardTypeService, CardTypeDbService>();
     builder.Services.AddScoped<ICategoryService, CategoryDbService>();
@@ -69,22 +70,20 @@ try
     builder.Services.AddScoped<IPublicationStateService, PublicationStateDbService>();
     builder.Services.AddScoped<IPhotoService, PhotoDbService>();
     builder.Services.AddScoped<IColorService, ColorDbService>();
-    builder.Services.AddScoped<IAccountService, AccountDbService>();
     builder.Services.AddScoped<IPhotoPublicationService, PhotoPublicationDbService>();
     builder.Services.AddScoped<ITransactionService, TransactionDbService>();
     builder.Services.AddScoped<IShoppingCartService, ShoppingCartDbService>();
     builder.Services.AddScoped<IPublicationVisitedService, PublicationVisitedDbService>();
 
-    // Configuración del contexto de Identity (autenticación y autorización)
+    // Configuración de Identity para autenticación y autorización
     builder.Services.AddDbContext<DbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("cnMercadoLibre")));
 
-    // Configurar Identity
     builder.Services.AddIdentity<User, IdentityRole<int>>()
         .AddEntityFrameworkStores<DbContext>()
         .AddDefaultTokenProviders();
 
-    // Configurar JWT para autenticación
+    // Configuración de JWT para autenticación
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -113,8 +112,8 @@ try
         app.UseSwaggerUI();
     }
 
-    // Aplica la política de CORS configurada anteriormente (AllowAll para desarrollo)
-    app.UseCors("AllowAll");
+    // Aplica la política de CORS configurada anteriormente
+    app.UseCors("AllowHttpServerOrigin");
 
     app.UseAuthentication();
     app.UseAuthorization();
