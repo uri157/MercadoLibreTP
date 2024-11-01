@@ -206,7 +206,7 @@ public class AccountController : ControllerBase
 
      // Obtener lista de usuarios (solo administradores)
     [Authorize]
-    [HttpGet("/users")]
+    [HttpGet("getUserInfo")]
     public async Task<IActionResult> GetUser()
     {
         try
