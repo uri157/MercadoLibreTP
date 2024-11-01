@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 
-
 [ApiController]
 [Route("api/account")]
 public class AccountController : ControllerBase
-{   private readonly IAccountService _accountService;
+{
+    private readonly IAccountService _accountService;
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<IdentityRole<int>> _roleManager;
     private readonly SignInManager<User> _signInManager;
@@ -19,19 +19,18 @@ public class AccountController : ControllerBase
 
     public AccountController(
         UserManager<User> userManager,
-        IAccountService AccountService, 
-        RoleManager<IdentityRole<int>> roleManager, 
-        SignInManager<User> signInManager, 
+        IAccountService accountService,
+        RoleManager<IdentityRole<int>> roleManager,
+        SignInManager<User> signInManager,
         IConfiguration configuration)
     {
         _userManager = userManager;
-        _accountService = AccountService;
+        _accountService = accountService;
         _roleManager = roleManager;
         _signInManager = signInManager;
         _configuration = configuration;
     }
 
-    
     // Registro de usuarios
     [AllowAnonymous]
     [HttpPost("register")]
@@ -58,17 +57,17 @@ public class AccountController : ControllerBase
         var result = await _userManager.CreateAsync(user, model.Password);
         if (!result.Succeeded)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, new 
-            { 
+            return StatusCode(StatusCodes.Status500InternalServerError, new
+            {
                 Message = "Error al crear usuario",
-                Errors = result.Errors.Select(e => e.Description) // Incluye los errores de validación
+                Errors = result.Errors.Select(e => e.Description)
             });
         }
 
         return Ok(new { Message = "Usuario creado satisfactoriamente" });
     }
 
-    // Solo el propietario del recurso puede modificar su información
+    // Actualizar información de usuario
     [Authorize]
     [HttpPut("update")]
     public async Task<IActionResult> UpdateUser(UserPostPutDTO model)
@@ -82,7 +81,6 @@ public class AccountController : ControllerBase
                 return Forbid();
             }
 
-            // Llama al servicio para actualizar el usuario, pasando el ID como entero
             var updatedUser = await _accountService.Update(currentUserId, model);
 
             if (updatedUser == null)
@@ -90,7 +88,6 @@ public class AccountController : ControllerBase
                 return NotFound(new { Message = "Usuario no encontrado" });
             }
 
-            // Retorna el usuario actualizado en formato DTO
             return Ok(new
             {
                 Message = "Usuario actualizado satisfactoriamente",
@@ -99,19 +96,17 @@ public class AccountController : ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            // Error si no se encuentra o falla la actualización
             return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
         }
     }
 
-
-    // Login de usuarios y generación de JWT
+    // Login y generación de JWT
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDTO model)
     {
         var user = await _userManager.FindByNameAsync(model.Username);
-        
+
         if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
         {
             var userRoles = await _userManager.GetRolesAsync(user);
@@ -119,11 +114,10 @@ public class AccountController : ControllerBase
             var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // ID del usuario
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // Identificador único para el token
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            // Añadir los roles del usuario como claims
             foreach (var role in userRoles)
             {
                 authClaims.Add(new Claim(ClaimTypes.Role, role));
@@ -146,14 +140,11 @@ public class AccountController : ControllerBase
             });
         }
 
-        // Manejo de error unificado y mensaje generalizado para mejorar la seguridad
         return Unauthorized(new { message = "Invalid username or password." });
     }
 
-    
     // Asignar un rol a un usuario
     [Authorize(Roles = "admin")]
-    //[AllowAnonymous]
     [HttpPost("asignar-rol")]
     public async Task<IActionResult> AsignarRol([FromBody] RoleAssignmentDTO model)
     {
@@ -178,33 +169,24 @@ public class AccountController : ControllerBase
         return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Error al asignar el rol" });
     }
 
-    // Obtener la lista de roles, solo permitido para administradores
+    // Obtener la lista de roles (solo administradores)
     [Authorize(Roles = "admin")]
     [HttpGet("roles")]
     public async Task<IActionResult> GetRoles()
     {
-        // Cambia la lista a List<IdentityRole<int>>
-        List<IdentityRole<int>> roles = await _roleManager.Roles.ToListAsync();
+        var roles = await _roleManager.Roles.ToListAsync();
         return Ok(roles);
     }
 
-    
-    // Obtener la lista de usuarios, solo permitido para administradores
+    // Obtener lista de usuarios (solo administradores)
     [Authorize(Roles = "admin")]
     [HttpGet("users")]
     public async Task<IActionResult> GetUsers()
     {
         try
         {
-            // Verificar que el rol de administrador esté presente en los claims del usuario
-            // if (!User.IsInRole("Admin"))
-            // {
-            //     return Forbid("Acceso denegado: solo los administradores pueden acceder a la lista de usuarios.");
-            // }
-
-            // Intentar obtener la lista de usuarios
             var users = await _accountService.GetAll();
-            
+
             if (users == null || !users.Any())
             {
                 return NotFound("No se encontraron usuarios en el sistema.");
@@ -214,17 +196,15 @@ public class AccountController : ControllerBase
         }
         catch (UnauthorizedAccessException)
         {
-            // Manejar excepciones de acceso no autorizado
             return Forbid("No tienes autorización para realizar esta operación.");
         }
         catch (Exception ex)
         {
-            // Manejar cualquier otro error no previsto
             return StatusCode(500, "Ocurrió un error interno en el servidor: " + ex.Message);
         }
     }
 
-    // Obtener roles específicos de un usuario (podría limitarse al propio usuario o administradores)
+    // Obtener roles específicos de un usuario
     [Authorize(Roles = "admin, User")]
     [HttpGet("/users/{id}/roles")]
     public async Task<IActionResult> GetRoles(string id)
@@ -238,9 +218,8 @@ public class AccountController : ControllerBase
         return BadRequest();
     }
 
-    // Crear un rol, solo permitido para administradores
+    // Crear un rol (solo administradores)
     [Authorize(Roles = "admin")]
-    //[AllowAnonymous]
     [HttpPost("role")]
     public async Task<IActionResult> CreateRole([FromBody] string roleName)
     {
@@ -249,14 +228,12 @@ public class AccountController : ControllerBase
             return BadRequest("El nombre del rol no puede estar vacío.");
         }
 
-        // Verifica si el rol ya existe
         var roleExists = await _roleManager.RoleExistsAsync(roleName);
         if (roleExists)
         {
             return Conflict($"El rol '{roleName}' ya existe.");
         }
 
-        // Crea un nuevo rol
         var result = await _roleManager.CreateAsync(new IdentityRole<int>(roleName));
 
         if (result.Succeeded)
@@ -264,15 +241,11 @@ public class AccountController : ControllerBase
             return Ok($"El rol '{roleName}' ha sido creado exitosamente.");
         }
 
-        // Si algo falla, formatea y devuelve los errores
         var errorMessages = result.Errors.Select(e => e.Description).ToList();
-        var errorResponse = new
+        return BadRequest(new
         {
             Message = "Error al crear el rol.",
             Errors = errorMessages
-        };
-
-        return BadRequest(errorResponse);
+        });
     }
-
 }
