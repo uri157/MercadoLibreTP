@@ -204,6 +204,33 @@ public class AccountController : ControllerBase
         }
     }
 
+     // Obtener lista de usuarios (solo administradores)
+    [Authorize]
+    [HttpGet("/users")]
+    public async Task<IActionResult> GetUser()
+    {
+        try
+        {
+            int userId = Convert.ToInt32(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var user = await _accountService.GetById(userId); // Usa await aquí
+            if (user == null)
+            {
+                return NotFound("Usuario no encontrado.");
+            }
+            return Ok(user); // Devuelve el usuario encontrado
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Forbid("No tienes autorización para realizar esta operación.");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Ocurrió un error interno en el servidor: " + ex.Message);
+        }
+    }
+
+
+
     // Obtener roles específicos de un usuario
     [Authorize(Roles = "admin, User")]
     [HttpGet("/users/{id}/roles")]

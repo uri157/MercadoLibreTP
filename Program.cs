@@ -105,12 +105,10 @@ try
 
     var app = builder.Build();
 
-    // Configuración del pipeline de solicitud HTTP
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-    }
+  
+    app.UseSwagger();
+    app.UseSwaggerUI();
+   
 
     // Aplica la política de CORS configurada anteriormente
     app.UseCors("AllowHttpServerOrigin");
