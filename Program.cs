@@ -7,6 +7,18 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configuración de CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigins", policy =>
+    {
+        policy.AllowAnyOrigin() // Agrega los dominios permitidos
+              .AllowAnyMethod()                     // Permite todos los métodos HTTP (GET, POST, etc.)
+              .AllowAnyHeader()                     // Permite todos los encabezados
+              .AllowCredentials();                  // Permite el uso de credenciales (si es necesario)
+    });
+});
+
 // Agregamos los controladores
 builder.Services.AddControllers();
 
@@ -109,6 +121,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowSpecificOrigins");
 
 app.UseAuthentication(); // Asegúrate de que la autenticación esté habilitada
 app.UseAuthorization();  // Asegúrate de que la autorización esté habilitada

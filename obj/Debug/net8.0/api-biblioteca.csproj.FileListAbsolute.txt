@@ -299,3 +299,4 @@ C:\Users\uriel\OneDrive\Escritorio\UAP\Programacion II\API Mercadolibre\obj\Debu
 C:\Users\uriel\OneDrive\Escritorio\UAP\Programacion II\API Mercadolibre\obj\Debug\net8.0\api-bibl.A4551F3D.Up2Date
 C:\Users\uriel\OneDrive\Escritorio\UAP\Programacion II\API Mercadolibre\obj\Debug\net8.0\api-biblioteca.genruntimeconfig.cache
 C:\Users\uriel\OneDrive\Escritorio\UAP\Programacion II\API Mercadolibre\obj\Debug\net8.0\ref\api-biblioteca.dll
+C:\Users\uriel\OneDrive\Escritorio\UAP\Programacion II\API Mercadolibre\obj\Debug\net8.0\api-biblioteca.sourcelink.json
