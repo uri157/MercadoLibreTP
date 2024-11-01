@@ -1,0 +1,14 @@
+{
+  "username": "Uriel",
+  "password": "SecurePassword!1"
+}
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiVXJpZWwiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJqdGkiOiJlZjliNzE2My04ZjNkLTRlOGEtODk2Ni1lZWEwMTAxMzk2NzciLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJhZG1pbiIsImV4cCI6MTczMDQxMzk2NiwiaXNzIjoidHVFbWlzb3IiLCJhdWQiOiJ0dUF1ZGllbmNpYSJ9.Al9pLl_fEVxodmbI2m_2TJ1XJku2LbR7ilPv3FusN9s
+
+{
+  "cardNumber": "9878533113637136",
+  "cardholderName": "John Doe",
+  "expirationDate": "12/25",
+  "cvv": "728",
+  "cardTypeId": 1
+}

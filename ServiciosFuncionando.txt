@@ -1,0 +1,14 @@
+Account ✔
+Card -- NO FUNCIONA
+TypeCard ✔
+Category ✔
+Color ✔
+Photo ✔
+PublicationState ✔
+ProductState ✔
+Publication ✔
+Review -- Funciona pero solo puede hacer review el dueño de la publi (error, falta una tabla "compra/venta")
+WishedArticle ✔ 
+
+
+
