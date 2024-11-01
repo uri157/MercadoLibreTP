@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace api_biblioteca.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class MELI : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -121,7 +121,7 @@ namespace api_biblioteca.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserInterest",
+                name: "UserHistory",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -131,7 +131,7 @@ namespace api_biblioteca.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserInterest", x => new { x.Id, x.IdPublication });
+                    table.PrimaryKey("PK_UserHistory", x => new { x.Id, x.IdPublication });
                 });
 
             migrationBuilder.CreateTable(
@@ -372,6 +372,26 @@ namespace api_biblioteca.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ShoppingCarts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdUser = table.Column<int>(type: "int", nullable: false),
+                    Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShoppingCarts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ShoppingCarts_AspNetUsers_IdUser",
+                        column: x => x.IdUser,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserNotifications",
                 columns: table => new
                 {
@@ -399,53 +419,67 @@ namespace api_biblioteca.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PhotosPublication",
+                name: "PhotoPublication",
                 columns: table => new
                 {
                     IdPublication = table.Column<int>(type: "int", nullable: false),
                     IdPhoto = table.Column<int>(type: "int", nullable: false),
                     Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1")
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PhotoId = table.Column<int>(type: "int", nullable: true),
+                    PublicationId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PhotosPublication", x => new { x.IdPublication, x.IdPhoto });
+                    table.PrimaryKey("PK_PhotoPublication", x => new { x.IdPublication, x.IdPhoto });
                     table.ForeignKey(
-                        name: "FK_PhotosPublication_Photos_IdPhoto",
+                        name: "FK_PhotoPublication_Photos_IdPhoto",
                         column: x => x.IdPhoto,
                         principalTable: "Photos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PhotosPublication_Publications_IdPublication",
+                        name: "FK_PhotoPublication_Photos_PhotoId",
+                        column: x => x.PhotoId,
+                        principalTable: "Photos",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PhotoPublication_Publications_IdPublication",
                         column: x => x.IdPublication,
                         principalTable: "Publications",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PhotoPublication_Publications_PublicationId",
+                        column: x => x.PublicationId,
+                        principalTable: "Publications",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Reviews",
+                name: "Transaction",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    IdUser = table.Column<int>(type: "int", nullable: false),
+                    IdBuyer = table.Column<int>(type: "int", nullable: false),
                     IdPublication = table.Column<int>(type: "int", nullable: false),
-                    Calification = table.Column<int>(type: "int", nullable: false),
-                    ReviewText = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                    TransactionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Calification = table.Column<int>(type: "int", nullable: true),
+                    ReviewText = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Reviews", x => x.Id);
+                    table.PrimaryKey("PK_Transaction", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Reviews_AspNetUsers_IdUser",
-                        column: x => x.IdUser,
+                        name: "FK_Transaction_AspNetUsers_IdBuyer",
+                        column: x => x.IdBuyer,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Reviews_Publications_IdPublication",
+                        name: "FK_Transaction_Publications_IdPublication",
                         column: x => x.IdPublication,
                         principalTable: "Publications",
                         principalColumn: "Id",
@@ -497,6 +531,33 @@ namespace api_biblioteca.Migrations
                         principalTable: "Publications",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShoppingCartItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ShoppingCartId = table.Column<int>(type: "int", nullable: false),
+                    PublicationId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShoppingCartItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ShoppingCartItems_Publications_PublicationId",
+                        column: x => x.PublicationId,
+                        principalTable: "Publications",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ShoppingCartItems_ShoppingCarts_ShoppingCartId",
+                        column: x => x.ShoppingCartId,
+                        principalTable: "ShoppingCarts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -554,9 +615,19 @@ namespace api_biblioteca.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PhotosPublication_IdPhoto",
-                table: "PhotosPublication",
+                name: "IX_PhotoPublication_IdPhoto",
+                table: "PhotoPublication",
                 column: "IdPhoto");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PhotoPublication_PhotoId",
+                table: "PhotoPublication",
+                column: "PhotoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PhotoPublication_PublicationId",
+                table: "PhotoPublication",
+                column: "PublicationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Publications_ColorId",
@@ -584,14 +655,30 @@ namespace api_biblioteca.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_IdPublication",
-                table: "Reviews",
-                column: "IdPublication");
+                name: "IX_ShoppingCartItems_PublicationId",
+                table: "ShoppingCartItems",
+                column: "PublicationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_IdUser",
-                table: "Reviews",
-                column: "IdUser");
+                name: "IX_ShoppingCartItems_ShoppingCartId",
+                table: "ShoppingCartItems",
+                column: "ShoppingCartId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShoppingCarts_IdUser",
+                table: "ShoppingCarts",
+                column: "IdUser",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transaction_IdBuyer",
+                table: "Transaction",
+                column: "IdBuyer");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transaction_IdPublication",
+                table: "Transaction",
+                column: "IdPublication");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserNotifications_Id",
@@ -636,13 +723,16 @@ namespace api_biblioteca.Migrations
                 name: "Cards");
 
             migrationBuilder.DropTable(
-                name: "PhotosPublication");
+                name: "PhotoPublication");
 
             migrationBuilder.DropTable(
-                name: "Reviews");
+                name: "ShoppingCartItems");
 
             migrationBuilder.DropTable(
-                name: "UserInterest");
+                name: "Transaction");
+
+            migrationBuilder.DropTable(
+                name: "UserHistory");
 
             migrationBuilder.DropTable(
                 name: "UserNotifications");
@@ -661,6 +751,9 @@ namespace api_biblioteca.Migrations
 
             migrationBuilder.DropTable(
                 name: "CardTypes");
+
+            migrationBuilder.DropTable(
+                name: "ShoppingCarts");
 
             migrationBuilder.DropTable(
                 name: "Notifications");

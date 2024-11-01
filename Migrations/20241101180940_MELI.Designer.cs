@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace api_biblioteca.Migrations
 {
     [DbContext(typeof(DbContext))]
-    [Migration("20241031155045_ShoppingCart4")]
-    partial class ShoppingCart4
+    [Migration("20241101180940_MELI")]
+    partial class MELI
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -426,6 +426,25 @@ namespace api_biblioteca.Migrations
                     b.ToTable("PublicationStates");
                 });
 
+            modelBuilder.Entity("PublicationVisited", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IdPublication")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdUser")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id", "IdPublication");
+
+                    b.ToTable("UserHistory");
+                });
+
             modelBuilder.Entity("ShoppingCart", b =>
                 {
                     b.Property<int>("Id")
@@ -596,25 +615,6 @@ namespace api_biblioteca.Migrations
                     b.HasIndex("ProfilePhotoId");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("UserInterest", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("IdPublication")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IdUser")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id", "IdPublication");
-
-                    b.ToTable("UserInterest");
                 });
 
             modelBuilder.Entity("UserNotification", b =>

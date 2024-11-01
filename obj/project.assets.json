@@ -5161,24 +5161,27 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\uriel\\.nuget\\packages\\": {}
+    "C:\\Users\\ROOT\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\uriel\\OneDrive\\Escritorio\\UAP\\Programacion II\\API Mercadolibre\\api-biblioteca.csproj",
+      "projectUniqueName": "C:\\Users\\ROOT\\Documents\\MercadoLibreTP\\api-biblioteca.csproj",
       "projectName": "api-biblioteca",
-      "projectPath": "C:\\Users\\uriel\\OneDrive\\Escritorio\\UAP\\Programacion II\\API Mercadolibre\\api-biblioteca.csproj",
-      "packagesPath": "C:\\Users\\uriel\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\uriel\\OneDrive\\Escritorio\\UAP\\Programacion II\\API Mercadolibre\\obj\\",
+      "projectPath": "C:\\Users\\ROOT\\Documents\\MercadoLibreTP\\api-biblioteca.csproj",
+      "packagesPath": "C:\\Users\\ROOT\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\ROOT\\Documents\\MercadoLibreTP\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\uriel\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\ROOT\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
